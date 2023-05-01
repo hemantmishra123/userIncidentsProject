@@ -13,17 +13,17 @@ from random import randint
 from.models import *
 from datetime import datetime
 
-
-
-def generateString(user):
-    string = "RMG" + ''.join(["{}".format(randint(0, 9)) for num in range(0, 5)]) + "2022"
+"""Generate the unique string for the user. all the time new case """
+def generateString(user, string):
     incident_objects = Incident.objects.filter(user_id = user).all()
-
-    for user_info in incident_objects:
-        if string == user_info.incident_id:
-            generateString(user)
-
-    return string
+    if string in incident_objects:
+        print("Calling the Recursion.")
+        find = "RMG" + ''.join(["{}".format(randint(0, 9)) for num in range(0, 5)]) + "2022"
+        return generateString(user, find)
+    
+    else:
+        return string
+        
 
 """Api return for Home_Page"""
 class HomePage(TemplateView):
@@ -52,23 +52,28 @@ class CreateUser(APIView):
 """Api for login to Existing User"""
 class UserLogin(APIView):
     def post(self,request,*args,**kwargs):
-        user_data = request.data
-        username = user_data["username"]
-        password = user_data["password"]
+        try:
+            user_data = request.data
+            username = user_data["username"]
+            password = user_data["password"]
         
         #TODO created a authenticate instance for checking 
         #IF USER Is exist or not with the login credentials.
         #If user login return a user_instance object and otherwise None.
-        authenticate_instance = BackendModel()
+            authenticate_instance = BackendModel()
 
-        user=authenticate_instance.Authenticate(username, password)
-        print(user)
-        if user:
-            login(request, user)
-            print(request.user)
-            return HttpResponse('ok')
-        else:
-            return Response("user is not valid")
+            user=authenticate_instance.Authenticate(username, password)
+            print(user)
+            if user:
+                login(request, user)
+                print(request.user)
+                return HttpResponse('ok')
+            else:
+                return Response("user is not valid")
+        
+        except Exception as e:
+            print(e)
+        
 
 
 """Api for creating a Incident for the Login User"""
@@ -86,22 +91,38 @@ class UserIncidents(APIView):
 
     """Logined user is creating the incident & testing with postman"""
     def post(self,request,*args,**kwargs):
-        print(request.user)
-        data = request.data
-        user = User.objects.get(username = request.user)
-        reporter_name  = data["reporter_name"]
-        incident_details = data["incident_details"]
-        reported_date = datetime.now()
-        priority = data["priority"]
-        incident_status = data["incident_status"]
+        try:
+            print(request.user)
+            data = request.data
+            user = User.objects.get(username = request.user)
+            reporter_name  = data["reporter_name"]
+            incident_details = data["incident_details"]
+            reported_date = datetime.now()
+            priority = data["priority"]
+            incident_status = data["incident_status"]
 
-        #creating incident instance for logined user.
-        #generate the incident_id First for the incident.
-        string = generateString(user)
+            #creating incident instance for logined user.
+            #generate the incident_id First for the incident.
+            string = "RMG" + ''.join(["{}".format(randint(0, 9)) for num in range(0, 5)]) + "2022"
+            string = generateString(user, string)
 
-        incident = Incident(incident_id = string, user_id = user, reporter_name = reporter_name, incident_details=incident_details, reported_date=reported_date,priority=priority,incident_status=incident_status)
-        incident.save()
-        user_incident = UserProfile()
-        user_incident = incident
-        user_incident.save()
-        return Response("post request get sucessfull")
+            incident = Incident(incident_id = string, user_id = user, reporter_name = reporter_name, incident_details=incident_details, reported_date=reported_date,priority=priority,incident_status=incident_status)
+            incident.save()
+            user_incident = UserProfile()
+            user_incident = incident
+            user_incident.save()
+            return Response("post request get sucessfull")
+        
+        except Exception as e:
+            print(e)
+
+"""
+class get the root of the Equations
+"""
+
+class EquationCompute(APIView):
+    def post(self, request,*args,**kwargs):
+        try:
+            req
+        except Exception as e:
+            print(e)
