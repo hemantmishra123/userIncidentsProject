@@ -115,14 +115,3 @@ class UserIncidents(APIView):
         
         except Exception as e:
             print(e)
-
-"""
-class get the root of the Equations
-"""
-
-class EquationCompute(APIView):
-    def post(self, request,*args,**kwargs):
-        try:
-            req
-        except Exception as e:
-            print(e)
